@@ -172,6 +172,21 @@ ecm_generate_headers(KWidgetsAddons_HEADERS
   REQUIRED_HEADERS KWidgetsAddons_HEADERS
 )
 
+find_package(PythonModuleGeneration)
+
+if (PythonModuleGeneration_FOUND)
+  ecm_generate_python_binding(
+    TARGET KF5::WidgetsAddons
+    PYTHONNAMESPACE PyKF5
+    MODULENAME KWidgetsAddons
+    RULES_FILE "${CMAKE_SOURCE_DIR}/cmake/rules_PyKF5.py"
+    SIP_DEPENDS
+      QtWidgets/QtWidgetsmod.sip
+    HEADERS
+      ${KWidgetsAddons_HEADERS}
+  )
+endif()
+
 install(TARGETS KF5WidgetsAddons EXPORT KF5WidgetsAddonsTargets ${KF5_INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
