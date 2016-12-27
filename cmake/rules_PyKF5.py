@@ -54,6 +54,15 @@ def local_function_rules():
         ["KPageDialog", "buttonBox", ".*", "const QDialogButtonBox.*", ".*", rules_engine.function_discard],
     ]
 
+def qualify_enum_initialiser(container, function, parameter, sip, matcher):
+    """Enums in initialisers need to be fully qualified."""
+    sip["init"] = container.spelling + "::" + sip["init"]
+
+def local_parameter_rules():
+    return [
+        ["KStandardGuiItem", "back|forward", "useBidi", ".*", ".*", qualify_enum_initialiser],
+    ]
+
 class RuleSet(Qt5Ruleset.RuleSet):
     """
     SIP file generator rules. This is a set of (short, non-public) functions
@@ -61,5 +70,6 @@ class RuleSet(Qt5Ruleset.RuleSet):
     """
     def __init__(self, includes):
         Qt5Ruleset.RuleSet.__init__(self, includes)
+        self._param_db = rules_engine.ParameterRuleDb(lambda: local_parameter_rules() + Qt5Ruleset.parameter_rules())
         self._fn_db = rules_engine.FunctionRuleDb(lambda: local_function_rules() + Qt5Ruleset.function_rules())
         self._container_db = rules_engine.ContainerRuleDb(lambda: local_container_rules() + Qt5Ruleset.container_rules())
